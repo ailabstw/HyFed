@@ -8,6 +8,7 @@ services:
 stages:
   - test
   - build
+  - deploy
 
 .setup-python:
   before_script:
@@ -27,6 +28,11 @@ stages:
   script:
     - pip install build
     - python -m build
+
+.deploy:
+  after_script:
+    - pip install twine
+    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
 
 test-develop:
   image: ${PYTHON}
@@ -70,6 +76,27 @@ test-production:
   extends:
     - .setup-python
     - .test
+  parallel:
+    matrix:
+      - PYTHON:
+        - python:3.7
+        - python:3.8
+        - python:3.9
+        - python:3.10
+        - python:3.11
+
+deploy-production:
+  image: ${PYTHON}
+  stage: deploy
+  artifacts:
+    paths:
+    - public
+  only:
+    - main
+  extends:
+    - .setup-python
+    - .build
+    - .deploy
   parallel:
     matrix:
       - PYTHON:

@@ -1,0 +1,80 @@
+variables:
+  IMAGE: $CI_REGISTRY_IMAGE:latest
+  DOCKER_DRIVER: overlay
+
+services:
+  - docker:20.10-dind
+
+stages:
+  - test
+  - build
+
+.setup-python:
+  before_script:
+    - pip install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
+    - python --version ; pip --version  # For debugging
+    - pip install -r requirements.txt
+
+.test:
+  coverage: /Test coverage (\d+\.\d+%)/
+  script:
+    - pip install pytest
+    - pytest
+
+.build:
+  script:
+    - pip install build
+    - python -m build
+
+test-develop:
+  image: ${PYTHON}
+  stage: test
+  except:
+    - main
+  extends:
+    - .setup-python
+    - .test
+  parallel:
+    matrix:
+      - PYTHON:
+        - python:3.7
+        - python:3.8
+        - python:3.9
+        - python:3.10
+        - python:3.11
+
+build-develop:
+  image: ${PYTHON}
+  stage: build
+  except:
+    - main
+  extends:
+    - .setup-python
+    - .build
+  parallel:
+    matrix:
+      - PYTHON:
+        - python:3.7
+        - python:3.8
+        - python:3.9
+        - python:3.10
+        - python:3.11
+
+test-production:
+  image: ${PYTHON}
+  stage: test
+  only:
+    - main
+  extends:
+    - .setup-python
+    - .test
+  parallel:
+    matrix:
+      - PYTHON:
+        - python:3.7
+        - python:3.8
+        - python:3.9
+        - python:3.10
+        - python:3.11

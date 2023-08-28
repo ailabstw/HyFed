@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hyfed"
+version = "0.1.0"
+
+authors = [
+    { name="Yueh-Hua Tu", email="yuehhua.tu@ailabs.tw" },
+]
+
+description = "A reimplementation of HyFed framework."
+
+requires-python = ">=3.7"
+
+classifiers = [
+   "Programming Language :: Python :: 3",
+   "Operating System :: OS Independent",
+]
+
+dependencies = [
+  'numpy >= 1, < 2',
+  'pydantic >= 2, < 3',
+  'aiohttp >= 3, < 4',
+  'fastapi >= 0, < 1',
+]
+
+[tool.setuptools.packages]
+find = {}

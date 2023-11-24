@@ -16,7 +16,12 @@ class StrongRandomTestCase(unittest.TestCase):
         self.assertEqual((self.n, ), result.shape)
         self.assertEqual(np.int64, result.dtype)
 
-    def test_rand64(self):
-        result = hyfed.rand.rand64(self.n)
+    def test_rand(self):
+        result = hyfed.rand.rand(0., 1., self.n, dtype=np.float64)
+        self.assertEqual((self.n, ), result.shape)
+        self.assertEqual(np.float64, result.dtype)
+
+    def test_randn(self):
+        result = hyfed.rand.randn(0., 1., self.n, dtype=np.float64)
         self.assertEqual((self.n, ), result.shape)
         self.assertEqual(np.float64, result.dtype)

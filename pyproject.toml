@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hyfed"
-version = "0.1.0"
+version = "0.2.0"
 
 authors = [
     { name="Yueh-Hua Tu", email="yuehhua.tu@ailabs.tw" },

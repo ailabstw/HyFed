@@ -12,27 +12,27 @@ stages:
 
 .setup-python:
   before_script:
-    - pip install virtualenv
-    - virtualenv venv
-    - source venv/bin/activate
-    - python --version ; pip --version  # For debugging
-    - pip install -r requirements.txt
+    - pip install poetry
+    - poetry env use python
+    - python --version ; pip --version; poetry --version  # For debugging
+    - poetry install
+    - poetry show  # For debugging
 
 .test:
   coverage: /Test coverage (\d+\.\d+%)/
   script:
-    - pip install pytest
-    - pytest
+    - poetry install --only test
+    - poetry run pytest
 
 .build:
   script:
-    - pip install build
-    - python -m build
+    - poetry install --only packaging,doc
+    - poetry build
 
 .deploy:
   after_script:
-    - pip install twine
-    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+    - poetry install --only publishing,doc
+    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token poetry run twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
 
 test-develop:
   image: ${PYTHON}
@@ -45,7 +45,6 @@ test-develop:
   parallel:
     matrix:
       - PYTHON:
-        - python:3.7
         - python:3.8
         - python:3.9
         - python:3.10
@@ -63,7 +62,6 @@ build-develop:
   parallel:
     matrix:
       - PYTHON:
-        - python:3.7
         - python:3.8
         - python:3.9
         - python:3.10
@@ -81,7 +79,6 @@ test-production:
   parallel:
     matrix:
       - PYTHON:
-        - python:3.7
         - python:3.8
         - python:3.9
         - python:3.10
@@ -103,7 +100,6 @@ deploy-production:
   parallel:
     matrix:
       - PYTHON:
-        - python:3.7
         - python:3.8
         - python:3.9
         - python:3.10
